@@ -1,10 +1,11 @@
 package com.zhang.shakeImage.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
 
 /**
  * Created by zhangsl on 2017/2/10.
@@ -20,7 +21,6 @@ public class Picture {
     private String type;// 图片类型
     private String statusCode;// 状态码
 
-
     private String contentType;//URL类型
     private Date createTime;// 创建时间
     private Date updateTime;// 上次使用时间
@@ -28,6 +28,10 @@ public class Picture {
     public Picture() {
         this.createTime = new Date();
     }
+    
+    public Picture(Long id) {
+		this.id = id;
+	}
 
     public Long getId() {
         return id;
@@ -91,12 +95,5 @@ public class Picture {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Picture{" +
-                "id=" + id +
-                '}';
     }
 }

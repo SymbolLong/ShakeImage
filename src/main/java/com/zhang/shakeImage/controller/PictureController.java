@@ -1,28 +1,30 @@
 package com.zhang.shakeImage.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.zhang.shakeImage.entity.Picture;
-import com.zhang.shakeImage.repository.PictureRepository;
-import com.zhang.shakeImage.service.PictureService;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import com.alibaba.fastjson.JSONObject;
+import com.zhang.shakeImage.entity.Picture;
+import com.zhang.shakeImage.repository.PictureRepository;
+import com.zhang.shakeImage.service.PictureService;
 
 /**
  * Created by zhangsl on 2017/2/10.
@@ -40,16 +42,18 @@ public class PictureController {
     @GetMapping(value = "add")
     @ResponseBody
     public String addPicture(@RequestParam String url) {
-        String md5 = DigestUtils.md5Hex(url);
-        List<Picture> pictures = pictureRepository.findByMd5(md5);
+    	String md5 = DigestUtils.md5Hex(url);
+        Picture picture = pictureRepository.findByMd5(md5);
 
-        if (pictures.isEmpty()) {
+        if (picture == null) {
             String type = PictureService.getTypeByURL(url);
             if (!type.isEmpty()) {
-                Picture picture = new Picture();
+                List<Picture> pictures = pictureRepository.findByContentType(new PageRequest(0, 1));
+                picture = pictures.isEmpty()? new Picture():pictures.get(0);
                 picture.setUrl(url);
                 picture.setType(type);
                 picture.setMd5(md5);
+                picture.setContentType("image/");
                 pictureRepository.save(picture);
                 logger.info(picture.getId() + "入库成功！");
             }
@@ -111,6 +115,10 @@ public class PictureController {
     @GetMapping("fix")
     public void fix() {
         System.out.println("执行中....");
+        Picture picture = pictureRepository.findByMd5("74807919789f52cb997498c6d728fb6f");
+        System.out.println(picture.getId());
+       
+        /*
         Iterable<Picture> pics = pictureRepository.findAll();
         Iterator<Picture> iterator = pics.iterator();
         while (iterator.hasNext()) {
@@ -134,5 +142,6 @@ public class PictureController {
                 e.printStackTrace();
             }
         }
+        */
     }
 }

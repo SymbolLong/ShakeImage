@@ -29,11 +29,24 @@ public class Picture {
         this.createTime = new Date();
     }
     
-    public Picture(Long id) {
+    
+
+    public Picture(Long id, String url, String md5, String type, String statusCode, String contentType, Date createTime,
+			Date updateTime) {
+		super();
 		this.id = id;
+		this.url = url;
+		this.md5 = md5;
+		this.type = type;
+		this.statusCode = statusCode;
+		this.contentType = contentType;
+		this.createTime = createTime;
+		this.updateTime = updateTime;
 	}
 
-    public Long getId() {
+
+
+	public Long getId() {
         return id;
     }
 

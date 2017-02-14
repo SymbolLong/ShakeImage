@@ -30,11 +30,6 @@ public class PictureService {
             result = url.replace("WidthHeight", width + "x" + height);
         } else if (url.startsWith(Contant.ZOL)) {
             result = url.replace("WidthHeight", width + "x" + height);
-        } else if (url.startsWith(Contant.BIZHI3G)) {
-            String type = getTypeByURL(url);
-            if (!type.isEmpty()) {
-                result = url + "." + width + "." + height + type;
-            }
         }
         return result;
     }

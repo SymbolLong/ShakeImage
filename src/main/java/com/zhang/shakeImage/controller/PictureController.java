@@ -66,9 +66,9 @@ public class PictureController {
 	}
 
 	@GetMapping(value = "random")
-	public void icon(@RequestParam(defaultValue = "640") String width,
+	public void random(@RequestParam(defaultValue = "640") String width,
 			@RequestParam(defaultValue = "1136") String height, HttpServletResponse response) {
-		int total = 189889;
+		int total = 231145;
 
 		try {
 			Random random = new Random();
@@ -113,11 +113,69 @@ public class PictureController {
 			e.printStackTrace();
 		}
 	}
+	
+	@GetMapping(value = "order")
+	public void order(Long id, HttpServletResponse response) {
+		int total = 231145;
+		if (id > total) {
+			id = 1l;
+		}
+		String width = "640";
+		String height = "1136";
+		
+		try {
+			Random random = new Random();
+			while (true) {
+				long start = System.currentTimeMillis();
+				Picture picture = pictureRepository.findOne(id);
+				if (!picture.getContentType().contains("image")) {
+					continue;
+				}
+				String picUrl = PictureService.getURL(picture.getUrl(), width, height);
+				
+				URL url = new URL(picUrl);
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestProperty("User-Agent",
+						"User-Agent:Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50");
+				connection.setRequestMethod("GET");
+				int code = connection.getResponseCode();
+				String type = connection.getHeaderField("Content-Type");
+				long end = System.currentTimeMillis();
+				picture.setStatusCode(code + "");
+				picture.setContentType(type);
+				picture.setUpdateTime(new Date());
+				picture.setLoadTime(end - start);
+				pictureRepository.save(picture);
+				
+				if (code != 200 || !type.contains("image")) {
+					logger.info(id + " staus code:" + code + ";content-type:" + type);
+					continue;
+				}
+				byte[] data = IOUtils.toByteArray(connection.getInputStream());
+				
+				response.setContentType(type);
+				OutputStream stream = response.getOutputStream();
+				stream.write(data);
+				stream.flush();
+				stream.close();
+				System.out.println(id + " success!");
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@GetMapping("fix")
-	public void fix(HttpServletResponse response) {
-
-		System.out.println("执行中....");
+	public void fix(Long id) {
+		int total = 231145;
+		if (id > total) {
+			return;
+		}
+		System.out.println("Executing....");
+		Picture picture = pictureRepository.findOne(id);
+		picture.setContentType("handle");
+		pictureRepository.save(picture);
 
 		/*
 		 * Iterable<Picture> pics = pictureRepository.findAll();

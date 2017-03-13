@@ -166,16 +166,18 @@ public class PictureController {
 		}
 	}
 
-	@GetMapping("fix")
-	public void fix(Long id) {
+	@GetMapping(value = "fix")
+	@ResponseBody
+	public String fix(Long id) {
 		int total = 231145;
 		if (id > total) {
-			return;
+			return "too large";
 		}
 		System.out.println("Executing....");
 		Picture picture = pictureRepository.findOne(id);
 		picture.setContentType("handle");
 		pictureRepository.save(picture);
+		return "marked";
 
 		/*
 		 * Iterable<Picture> pics = pictureRepository.findAll();
